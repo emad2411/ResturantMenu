@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_item_details"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.emad.cctv.resturantmenu.ui.ItemDetails">
+
+    <TextView
+        tools:text="Apple Pie"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:id="@+id/item_name_txt"
+        android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"/>
+
+    <TextView
+        tools:text="10 $"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:id="@+id/item_price_text"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
+
+    <ImageView
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        app:srcCompat="@drawable/apple_pie"
+        android:id="@+id/item_image"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"/>
+
+    <TextView
+        tools:text="Nice and delicious food for ever i will eat it everyday and every night"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/item_desc_txt"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:layout_below="@+id/item_image"
+        android:layout_alignParentStart="true"/>
+
+    <TextView
+        tools:text="Sweet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/item_cat_text"
+        android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"/>
+</RelativeLayout>

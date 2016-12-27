@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <group
+        >
+        <item
+                android:id="@+id/action_Settings"
+                android:title="@string/settings"
+                app:showAsAction="ifRoom" />
+        <item android:title="@string/import_as_json"
+              android:id="@+id/import_json"
+              app:showAsAction="ifRoom"/>
+        <item android:title="@string/export_as_json"
+              android:id="@+id/export_json"
+              app:showAsAction="ifRoom"/>
+        <item
+            android:id="@+id/action_signin"
+            android:title="@string/sign_in"
+            app:showAsAction="always" />
+    </group>
+
+</menu>
