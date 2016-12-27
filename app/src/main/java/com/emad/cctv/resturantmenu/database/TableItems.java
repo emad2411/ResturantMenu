@@ -1,6 +1,8 @@
 package com.emad.cctv.resturantmenu.database;
 
-
+/*in this class we are creating a static final variables of the quires Table Name and columns names
+* all the variables must be a static so we don't need to creat an instance of the class in the DBHelper class
+* */
 public class TableItems {
 
         public static final String TABLE_ITEMS = "items";
