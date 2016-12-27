@@ -3,9 +3,7 @@ package com.emad.cctv.resturantmenu.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-/**
- * Created by CCTV on 12/20/2016.
- */
+
 
 public class DataItem implements Parcelable {
 

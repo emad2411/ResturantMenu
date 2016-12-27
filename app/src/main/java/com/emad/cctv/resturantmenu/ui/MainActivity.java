@@ -22,6 +22,7 @@ import android.widget.Toast;
 import com.emad.cctv.resturantmenu.R;
 import com.emad.cctv.resturantmenu.adapter.ListItemAdapter;
 import com.emad.cctv.resturantmenu.adapter.ListItemRvAdapter;
+import com.emad.cctv.resturantmenu.database.ItemDataSource;
 import com.emad.cctv.resturantmenu.model.DataItem;
 import com.emad.cctv.resturantmenu.sample.SampleDataProvider;
 import com.emad.cctv.resturantmenu.utils.JsonHelper;
@@ -37,13 +38,24 @@ public class MainActivity extends AppCompatActivity {
     public static final String FILE_NAME ="com.emad.cctv.resturantmenu.ui" ;
     private static final int REQUEST_PERMISSION_WRITE =101 ;
     private List<DataItem> dataList;
+    private SharedPreferences settingPreferences;
+    private boolean grid;
     private boolean permissionGranted;
+    private ItemDataSource mItemDataSource;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        // initialize the RecyclerView
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv_list);
+
+        // please see the explanation in the DBHelper class
+        mItemDataSource=new ItemDataSource(this);
+        mItemDataSource.open();
+
+
         //getting the list of data from the data provider
         dataList= SampleDataProvider.dataItemList;
         //sorting the data alphabetically by name
@@ -55,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         //here we are getting the default shared Preferences
-        SharedPreferences settingPreferences= PreferenceManager.getDefaultSharedPreferences(this);
+        settingPreferences= PreferenceManager.getDefaultSharedPreferences(this);
         //then we have to set a listner to the changes happening of the values
         SharedPreferences.OnSharedPreferenceChangeListener listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
             @Override
@@ -65,13 +77,12 @@ public class MainActivity extends AppCompatActivity {
         };
         //here we are registering the changes
         settingPreferences.registerOnSharedPreferenceChangeListener(listener);
-
         //by default the value of the check box will be saved there
         //so her we are getting it from the default value
-        boolean grid=settingPreferences
+        grid=settingPreferences
                 .getBoolean(getString(R.string.grid_view_option_key),false);
 
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv_list);
+
 
         //here we need to judge if listView or GridView
         if (grid){
@@ -103,15 +114,15 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(settingIntent);
                 return true;
             case R.id.export_json:
-                //to Export the menu information as Json file to the external storage we need fire to create a helper class
-                //create a utlis pakage and create a class we call it JsonHelper
-                //go to the class to see the details
+                /*to Export the menu information as Json file to the external storage we need fire to create a helper class
+                create a utlis pakage and create a class we call it JsonHelper
+                go to the class to see the details*/
 
 
-                // writting to external storage need permission
-                //we have already delcared the permission in the manifest file
-                //but starting from android 6 you need to ask the user the permission in the runtime not only during installation
-                //so we are creatint the below methods to check the permission andto grant the permission
+                /*writting to external storage need permission
+                we have already delcared the permission in the manifest file
+                but starting from android 6 you need to ask the user the permission in the runtime not only during installation
+                so we are creatint the below methods to check the permission andto grant the permission*/
                 if (!permissionGranted){
                     checkPermissions();
 
@@ -149,6 +160,18 @@ public class MainActivity extends AppCompatActivity {
             editor.apply();
         }
 
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mItemDataSource.close();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mItemDataSource.open();
     }
 
     /* Checks if external storage is available for read and write */
