@@ -1,7 +1,6 @@
 package com.emad.cctv.resturantmenu.ui;
 
 import android.Manifest;
-import android.app.ListActivity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -10,6 +9,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -18,17 +18,17 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
 import com.emad.cctv.resturantmenu.R;
-import com.emad.cctv.resturantmenu.adapter.ListItemAdapter;
 import com.emad.cctv.resturantmenu.adapter.ListItemRvAdapter;
 import com.emad.cctv.resturantmenu.database.ItemDataSource;
 import com.emad.cctv.resturantmenu.model.DataItem;
-import com.emad.cctv.resturantmenu.sample.SampleDataProvider;
 import com.emad.cctv.resturantmenu.utils.JsonHelper;
 
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import static com.emad.cctv.resturantmenu.ui.SigninActivity.EMAIL_KEY;
@@ -37,11 +37,13 @@ public class MainActivity extends AppCompatActivity {
     private static final int SIGNIN_REQUEST =1 ;
     public static final String FILE_NAME ="com.emad.cctv.resturantmenu.ui" ;
     private static final int REQUEST_PERMISSION_WRITE =101 ;
+    private RecyclerView mRecyclerView;
     private List<DataItem> dataList;
-    private SharedPreferences settingPreferences;
-    private boolean grid;
     private boolean permissionGranted;
+    private DrawerLayout mDrawerLayout;
+    private ListView mListViewDrawer;
     private ItemDataSource mItemDataSource;
+    private String [] mCategories;
 
 
     @Override
@@ -49,25 +51,53 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         // initialize the RecyclerView
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv_list);
+        mRecyclerView = (RecyclerView) findViewById(R.id.rv_list);
+        // initialize the drawer layout
+        mDrawerLayout=(DrawerLayout) findViewById(R.id.drawer_layout) ;
+        //get the categories string array
+        mCategories=getResources().getStringArray(R.array.categories);
+        //the list view will be inside the drawer and contain the list of Catergories
+        mListViewDrawer =(ListView) findViewById(R.id.left_drawer);
+        mListViewDrawer.setAdapter(new ArrayAdapter<>(this,R.layout.drawer_list_item,mCategories));
+
+        mListViewDrawer.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                // when selecting a category from the drawer list
+                // we are getting all items with under the selected category
+                dataList=mItemDataSource.getMenuItem(mCategories[position]);
+                // then we are displaying the items
+                displayItems();
+                //then close the drawer
+                mDrawerLayout.closeDrawer(mListViewDrawer);
+            }
+        });
+
 
         // please see the explanation in the DBHelper class
         mItemDataSource=new ItemDataSource(this);
         mItemDataSource.open();
 
-
         //getting the list of data from the data provider
-        dataList= SampleDataProvider.dataItemList;
-        //sorting the data alphabetically by name
-        Collections.sort(dataList, new Comparator<DataItem>() {
-            @Override
-            public int compare(DataItem o1, DataItem o2) {
-                return o1.getItemName().compareTo(o2.getItemName());
+        //dataList= SampleDataProvider.dataItemList;
+        dataList=mItemDataSource.getMenuItem(null);
+        long itemsCount=mItemDataSource.getItemCount();
+        // if the database doesn't have any entries
+        if (itemsCount==0){
+            //adding the data from the list to the database
+            for (DataItem item:dataList) {
+                mItemDataSource.insertItem(item);
+                Log.i("database",item.getItemName()+" has been added");
             }
-        });
+        }
+        displayItems();
 
+
+    }
+
+    private void displayItems() {
         //here we are getting the default shared Preferences
-        settingPreferences= PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences settingPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         //then we have to set a listner to the changes happening of the values
         SharedPreferences.OnSharedPreferenceChangeListener listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
             @Override
@@ -79,22 +109,21 @@ public class MainActivity extends AppCompatActivity {
         settingPreferences.registerOnSharedPreferenceChangeListener(listener);
         //by default the value of the check box will be saved there
         //so her we are getting it from the default value
-        grid=settingPreferences
-                .getBoolean(getString(R.string.grid_view_option_key),false);
-
-
+        boolean grid = settingPreferences
+                .getBoolean(getString(R.string.grid_view_option_key), false);
 
         //here we need to judge if listView or GridView
         if (grid){
             //set the grid layout if the check box value true
-            recyclerView.setLayoutManager(new GridLayoutManager(this,3));
+            mRecyclerView.setLayoutManager(new GridLayoutManager(this,3));
 
         }else{
             //else set as Liner layout
-            recyclerView.setLayoutManager(new LinearLayoutManager(this));
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         }
         ListItemRvAdapter adapter = new ListItemRvAdapter(this, dataList);
-        recyclerView.setAdapter(adapter); }
+        mRecyclerView.setAdapter(adapter);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -144,6 +173,13 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
                 return true;
+
+            case R.id.filter:
+                mDrawerLayout.openDrawer(mListViewDrawer);
+                return true;
+            case R.id.select_all:
+                dataList=mItemDataSource.getMenuItem(null);
+                displayItems();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -172,6 +208,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         mItemDataSource.open();
+        displayItems();
     }
 
     /* Checks if external storage is available for read and write */

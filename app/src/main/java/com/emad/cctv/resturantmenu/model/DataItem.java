@@ -1,8 +1,12 @@
 package com.emad.cctv.resturantmenu.model;
 
+import android.content.ContentValues;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.emad.cctv.resturantmenu.database.TableItems;
+
+import java.util.UUID;
 
 
 public class DataItem implements Parcelable {
@@ -21,6 +25,11 @@ public class DataItem implements Parcelable {
 
 
     public DataItem(String itemId, String itemName, String category, String description, int sortPosition, double price, String photo) {
+
+        if (itemId == null) {
+            itemId = UUID.randomUUID().toString();
+        }
+
         this.mItemId = itemId;
         this.mItemName = itemName;
         this.mDescription = description;
@@ -86,6 +95,21 @@ public class DataItem implements Parcelable {
 
     public void setPhoto(String photo) {
         this.mPhoto = photo;
+    }
+
+    // this method is used to return ContentValue variable to pass it to the database and insert the item
+    public ContentValues toValues(){
+        ContentValues values=new ContentValues(7);
+
+        values.put(TableItems.COLUMN_ID,mItemId);
+        values.put(TableItems.COLUMN_NAME,mItemName);
+        values.put(TableItems.COLUMN_DESCRIPTION,mDescription);
+        values.put(TableItems.COLUMN_CATEGORY,mCategory);
+        values.put(TableItems.COLUMN_POSITION,mSortPosition);
+        values.put(TableItems.COLUMN_PRICE,mPrice);
+        values.put(TableItems.COLUMN_IMAGE,mPhoto);
+
+        return values;
     }
 
 

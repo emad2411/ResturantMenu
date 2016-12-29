@@ -3,6 +3,7 @@ package com.emad.cctv.resturantmenu.database;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 /*to save our menu items in the data base then we need to create a sqlLite database
 * here we are creating a DBHelper which extends SQLiteOpenHelper
@@ -29,7 +30,7 @@ public class DBHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(TableItems.SQL_CREATE);
-
+        Log.i("database","db created ");
     }
 //update the database
     @Override

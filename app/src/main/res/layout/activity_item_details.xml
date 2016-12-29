@@ -28,7 +28,8 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:id="@+id/item_price_text"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        tools:ignore="RelativeOverlap"/>
 
     <ImageView
         android:layout_width="300dp"
@@ -36,7 +37,8 @@
         app:srcCompat="@drawable/apple_pie"
         android:id="@+id/item_image"
         android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"/>
+        android:layout_centerHorizontal="true"
+        tools:ignore="ContentDescription"/>
 
     <TextView
         tools:text="Nice and delicious food for ever i will eat it everyday and every night"
